@@ -28,6 +28,9 @@ async def cooldown(self, guild):
 	while True:
 		t0 = time.time()
 
+		if not tools.check(guild):
+			break
+
 		for date in sorted(db[guild].items()):
 			if date[0] == "channel":
 				continue

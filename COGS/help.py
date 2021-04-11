@@ -11,7 +11,7 @@ class events(commands.Cog):
 
 	@commands.command()
 	async def help(self, ctx, *args):
-		embedVar = tools.embed("Alarm Bot Help", "``a!help``: This message. \n ``a!settime [Hours:Minutes AM/PM Timezone Message]``: Set an alarm (stackable). \n ``a!timezones``: Displays the compatible timezones. \n ``a!setchannel``: Sets the channel for alarm. \n ``a!setrole``: Role ID \n ``a!deletealarm``: Delete a certain alarm that was set. \n ``a!credits``: Displays the credits.") 
+		embedVar = tools.embed("Alarm Bot Help", "``a!help``: This message. \n ``a!settime [Hours:Minutes AM/PM Timezone Role-ID Message]``: Set an alarm (stackable). \n ``a!timezones``: Displays the compatible timezones. \n ``a!setchannel``: Sets the channel for alarm. \n ``a!setrole``: Role ID \n ``a!deletealarm``: Delete a certain alarm that was set. \n ``a!credits``: Displays the credits.") 
 		await ctx.send(embed=embedVar)
 		
 	@commands.command()
