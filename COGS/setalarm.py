@@ -8,6 +8,7 @@ from pytz import timezone
 import tools
 import time
 
+tasking = []
 
 timeZones = {
 	"EST": "US/EASTERN",
@@ -22,6 +23,8 @@ timeZones = {
 }
 
 async def cooldown(self, guild):
+	tasking.append(guild)
+
 	while True:
 		t0 = time.time()
 
@@ -41,7 +44,18 @@ async def cooldown(self, guild):
 
 		await asyncio.sleep((60 - datetime.utcnow().second) - (t1 - t0)) 
 
+
+def activate(self):
+	for guild in db.keys():
+		self.client.loop.create_task(cooldown(self, guild))
+
+
 async def requirements(self, ctx, args):
+	if not ctx.message.author.guild_permissions.administrator:
+		embedVar = tools.embed("You must be an admin!", "You must have the administrator role to use this command.")
+		await ctx.send(embed=embedVar)
+		return
+
 	if ctx.author.id == "771153822994530354" or ctx.author.id == "696790718743838793":
 		print("hi")
 
@@ -93,10 +107,10 @@ async def requirements(self, ctx, args):
 		embedVar = tools.embed("Please enter a valid role ID", "If you need help, please type ``a!help``.")
 		await ctx.send(embed=embedVar) 
 
-	if tools.check(ctx.guild.id) == True and not "channel" in db[str(ctx.guild.id)]:
-		print("Channel not set") 
+	if tools.check(ctx.guild.id) == False:
 		embedVar = tools.embed("You must set a channel before setting an alarm", "If you need help, please type ``a!help``.")
 		await ctx.send(embed=embedVar) 
+		return False
 
 	almName = " ".join(args)
 	name = None
@@ -108,18 +122,19 @@ async def requirements(self, ctx, args):
 
 		name = name + " " + args[x]
 
+	for date in sorted(db[str(ctx.guild.id)].items()):
+		if date[0] == "channel":
+			continue
 
+		date = date[1]
+		if date["name"] == name:
+			embedVar = tools.embed("There is already an alarm with the same name!", "Please use ``a!deletealarm`` to delete the previous alarm before setting a new one.")
+			await ctx.send(embed=embedVar) 
+			return False
 
-
-	if tools.check(ctx.guild.id) == False:
-		db[str(ctx.guild.id)] = {}
-		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name}
-		
-		self.client.loop.create_task(cooldown(self, str(ctx.guild.id)))
-
-	else:
-		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name}
+	db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name}
 	
+	if not str(ctx.guild.id) in tasking:	
 		self.client.loop.create_task(cooldown(self, str(ctx.guild.id)))
 
 	return True
@@ -131,8 +146,10 @@ for tz in timeZones:
 	print(date)
 
 class events(commands.Cog):
+
 	def __init__(self, client):
 		self.client = client
+		activate(self)
 
 	
 	@commands.command()
@@ -142,7 +159,7 @@ class events(commands.Cog):
 
 		embedVar = tools.embed("Time successfully set!", "Your time has successfully been set.")	
 		await ctx.send(embed=embedVar)
-	
+
 
 def setup(client):
   client.add_cog(events(client))

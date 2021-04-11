@@ -40,6 +40,10 @@ class events(commands.Cog):
 			else:
 				for channel in ctx.message.guild.channels:
 					if channel == self.client.get_channel(int(id)):
+						
+						if tools.check(ctx.guild.id) == False:
+							db[str(ctx.guild.id)] = {}
+
 						db[str(ctx.guild.id)]["channel"] = int(id)
 						embedVar = tools.embed("Successfully set channel", "Your channel has been successfully set.")
 						await ctx.send(embed=embedVar)
