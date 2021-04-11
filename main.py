@@ -17,4 +17,6 @@ for file in os.listdir('./COGS'):
 		client.load_extension(f'COGS.{file[:-3]}')
 		print(file[:-3] + " has loaded")
 
+#client = discord.Client(activity=discord.Game(name='Alarm'))
+
 client.run(os.getenv('TOKEN'))
