@@ -21,7 +21,7 @@ timeZones = {
 	"Troll": "Antarctica/Troll"
 }
 
-async def cooldown(guild):
+async def cooldown(self, guild):
 	while True:
 		t0 = time.time()
 
@@ -31,9 +31,11 @@ async def cooldown(guild):
 
 			date = date[1]
 			if datetime.now(timezone(timeZones[date["timezone"]])).strftime("%-I:%M%p") == date["time"] + date["apm"]: 
-				print("e") 
-			else:
-				print("Not time yet") 
+				embedVar = tools.embed("Alarm", "<@&" + str(date["role"]) + "> " + date["name"])
+				channel = self.client.get_channel(db[guild]["channel"])
+				await channel.send(embed=embedVar)
+				mention = await channel.send("<@&" + str(date["role"]) + ">")
+				await mention.delete()
 
 		t1 = time.time()
 
@@ -106,7 +108,6 @@ async def requirements(self, ctx, args):
 
 		name = name + " " + args[x]
 
-	print(name)
 
 
 
@@ -114,20 +115,14 @@ async def requirements(self, ctx, args):
 		db[str(ctx.guild.id)] = {}
 		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name}
 		
-		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
+		self.client.loop.create_task(cooldown(self, str(ctx.guild.id)))
 
 	else:
 		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name}
 	
-		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
+		self.client.loop.create_task(cooldown(self, str(ctx.guild.id)))
 
 	return True
-
-for tz in timeZones:
-	tz = timezone(timeZones[tz])
-	date = datetime.now(tz)
-	date = date.strftime("%-I:%M %p")
-	print(date)
 
 for tz in timeZones:
 	tz = timezone(timeZones[tz])
