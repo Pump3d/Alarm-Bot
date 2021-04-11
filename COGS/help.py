@@ -11,7 +11,7 @@ class events(commands.Cog):
 
 	@commands.command()
 	async def help(self, ctx, *args):
-		embedVar = tools.embed("Alarm Bot Help", "``a!help``: This message. \n ``a!settime``: Set the time you want for ping. \n ``a!credits``: Displays the credits.") 
+		embedVar = tools.embed("Alarm Bot Help", "``a!help``: This message. \n ``a!settime [Hours:Minutes AM/PM Timezone Message]``: Set an alarm (stackable). \n ``a!timezones``: Displays the compatible timezones. \n ``a!credits``: Displays the credits.") 
 		await ctx.send(embed=embedVar)
 		
 	@commands.command()
@@ -21,7 +21,7 @@ class events(commands.Cog):
 
 	@commands.command()
 	async def credits(self, ctx, *args):
-		embedVar = tools.embed("Credits", "Bot made by ChillPanda and Pump3d.")
+		embedVar = tools.embed("Credits", "Bot made by ``ChillPanda#5842`` and ``Pump3d#3682``.")
 		await ctx.send(embed=embedVar)
 
 #["EST", "PST", "MST", "GMT", "HST", "HST", "UTC"]

@@ -9,15 +9,15 @@ import tools
 import time
 
 timeZones = {
-"EST": "US/EASTERN",
-"PST": "US/PACIFIC",
-"MST": "US/MOUNTAIN",
-"GMT": "Etc/GMT",
-"HST": "US/HAWAII",
-"UTC": "Etc/Universal",
-"CT": "US/CENTRAL",
-"Universal": "Universal",
-"Troll": "Antarctica/Troll"
+	"EST": "US/EASTERN",
+	"PST": "US/PACIFIC",
+	"MST": "US/MOUNTAIN",
+	"GMT": "Etc/GMT",
+	"HST": "US/HAWAII",
+	"UTC": "Etc/Universal",
+	"CT": "US/CENTRAL",
+	"Universal": "Universal",
+	"Troll": "Antarctica/Troll"
 }
 
 async def cooldown(guild):
@@ -39,50 +39,50 @@ async def cooldown(guild):
 
 
 async def requirements(self, ctx, args):
-	if ctx.author == client.user:
-		pass
+	if ctx.author.id == "771153822994530354" or ctx.author.id == "696790718743838793":
+		print("hi")
 
 	
 	if ctx.author.bot:
 		return False
 	
+	if len(args) < 4:
+		print("Too little arguements")
+		embedVar = tools.embed("Please enter a valid amount of arguments", "If you need help, please type ``a!help``.")
+		await ctx.send(embed=embedVar)
+		return False
 	
-	for argum in args:
-		if argum == args[3]:
-			continue #im gonna print to see whats stopping it
+	if args[0] and not ":" in args[0]:
+		print("Time doesnt have colon")
+		embedVar = tools.embed("Please enter a valid time", "If you need help, please type ``a!help``.")
+		await ctx.send(embed=embedVar)
+		return False 
 
-		print(args[0], args[1], args[2], args[3])
-		if args[0] and not ":" in argum:
-			print("Time doesnt have colon")
-			embedVar = tools.embed("Please enter valid arguements", "If you need help, please type ``a!help``.")
-			await ctx.send(embed=embedVar)
-			return False 
+	if args[0] and len(args[0].split(":")[1]) < 2:
+		print("Minutes is too short")
+		embedVar = tools.embed("Please enter a valid time", "If you need help, please type ``a!help``.")
+		await ctx.send(embed=embedVar)
+		return False 
 
-		if args[0] and len(argum.split(":")[1]) < 2:
-			print("Minutes is too short")
-			embedVar = tools.embed("Please enter valid arguements", "If you need help, please type ``a!help``.")
-			await ctx.send(embed=embedVar)
-			return False 
+	arg0int = args[0].replace(":", "")
 
-		argum = argum.replace(":", "")
+	if arg0int.isdigit() and int(arg0int) > 1259 or arg0int.isdigit() and int(arg0int) < 100:
+		print("Time too long / short")
+		embedVar = tools.embed("Please enter a valid time", "If you need help, please type ``a!help``.")
+		await ctx.send(embed=embedVar)
+		return False
 
-		if argum.isdigit() and int(argum) > 1259 or argum.isdigit() and int(argum) < 100:
-			print("Time too long / short")
-			embedVar = tools.embed("Please enter valid arguements", "If you need help, please type ``a!help``.")
-			await ctx.send(embed=embedVar)
-			return False
-
-		if argum == args[2] and not argum.upper() in timeZones:
-			print("Not a valid timezone")
-			embedVar = tools.embed("Please enter valid arguements", "If you need help, please type ``a!help``.")
-			await ctx.send(embed=embedVar)
-			return False
-
-		if argum == args[1] and argum != "AM" and argum != "PM": 
-			print("Not AM or PM") 
-			embedVar = tools.embed("Please enter valid arguements", "If you need help, please type ``a!help``.")
-			await ctx.send(embed=embedVar) 
-			return False 
+	if args[2] and not args[2].upper() in timeZones:
+		print("Not a valid timezone")
+		embedVar = tools.embed("Please enter compatible timezone (a!timezones)", "If you need help, please type ``a!help``.")
+		await ctx.send(embed=embedVar)
+		return False
+	
+	if args[1] and args[1] != "AM" and args[1] != "PM": 
+		print("Not AM or PM") 
+		embedVar = tools.embed("Please enter AM or PM as a valid argument", "If you need help, please type ``a!help``.")
+		await ctx.send(embed=embedVar) 
+		return False 
 
 	name = " ".join(args)
 	
@@ -90,7 +90,7 @@ async def requirements(self, ctx, args):
 		db[str(ctx.guild.id)] = {name: {"time": args[0], "apm": args[1], "timezone": args[2],"name": args[3]}}
 		
 		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
-	
+
 	else:
 		db[str(ctx.guild.id)] = {name: {"time": args[0], "apm": args[1], "timezone": args[2],"name": args[3]}}
 	
