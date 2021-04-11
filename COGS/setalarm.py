@@ -24,7 +24,7 @@ timeZones = {
 
 async def cooldown(self, guild):
 	tasking.append(guild)
-
+	await self.client.wait_until_ready()
 	while True:
 		t0 = time.time()
 
