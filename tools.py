@@ -1,7 +1,7 @@
 import discord
 from replit import db
 
-colorVar = 0xc91414
+colorVar = 0xBE1931
 
 def embed(header, desc):
 	embedVar = discord.Embed(title = header, description = desc, color = colorVar)

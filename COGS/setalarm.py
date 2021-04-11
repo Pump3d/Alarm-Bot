@@ -32,6 +32,7 @@ async def cooldown(self, guild):
 			if date[0] == "channel":
 				continue
 
+
 			date = date[1]
 			if datetime.now(timezone(timeZones[date["timezone"]])).strftime("%-I:%M%p") == date["time"] + date["apm"]: 
 				embedVar = tools.embed("Alarm", "<@&" + str(date["role"]) + "> " + date["name"])
@@ -65,19 +66,19 @@ async def requirements(self, ctx, args):
 	
 	if len(args) < 5:
 		print("Too little arguements")
-		embedVar = tools.embed("Please enter a valid amount of arguments", "If you need help, please type ``a!help``.")
+		embedVar = tools.embed("Please enter a valid amount of arguments", "Please check ``a!help`` to see the bot command usage.")
 		await ctx.send(embed=embedVar)
 		return False
 	
 	if args[0] and not ":" in args[0]:
 		print("Time doesnt have colon")
-		embedVar = tools.embed("Please enter a valid time", "If you need help, please type ``a!help``.")
+		embedVar = tools.embed("Please enter a valid time", "Please enter a valid time using the ``hour:format`` method.")
 		await ctx.send(embed=embedVar)
 		return False 
 
-	if args[0] and len(args[0].split(":")[1]) < 2:
+	if args[0] and len(args[0].split(":")[1]) != 2:
 		print("Minutes is too short")
-		embedVar = tools.embed("Please enter a valid time", "If you need help, please type ``a!help``.")
+		embedVar = tools.embed("Please enter a valid time", "Please enter a valid arguement for the number of minutes.")
 		await ctx.send(embed=embedVar)
 		return False 
 
@@ -85,30 +86,30 @@ async def requirements(self, ctx, args):
 
 	if arg0int.isdigit() and int(arg0int) > 1259 or arg0int.isdigit() and int(arg0int) < 100:
 		print("Time too long / short")
-		embedVar = tools.embed("Please enter a valid time", "If you need help, please type ``a!help``.")
+		embedVar = tools.embed("Please enter a valid time", "Please enter a valid time using standard clock format.")
 		await ctx.send(embed=embedVar)
 		return False
 
 	if args[2] and not args[2].upper() in timeZones:
 		print("Not a valid timezone")
-		embedVar = tools.embed("Please enter compatible timezone (a!timezones)", "If you need help, please type ``a!help``.")
+		embedVar = tools.embed("Please enter a compatible timezone", "To view the list of compatible timezones, please type ``a!timezones``.")
 		await ctx.send(embed=embedVar)
 		return False
 	
-	if args[1] and args[1] != "AM" and args[1] != "PM": 
+	if args[1] and args[1].upper() != "AM" and args[1].upper() != "PM": 
 		print("Not AM or PM") 
-		embedVar = tools.embed("Please enter AM or PM as a valid argument", "If you need help, please type ``a!help``.")
+		embedVar = tools.embed("Please enter AM or PM as a valid argument", "Please enter a valid time using standard clock format.")
 		await ctx.send(embed=embedVar) 
 		return False 
 
 
 	if not discord.utils.get(ctx.message.guild.roles, id=int(args[3])):
 		print("Invalid role") 
-		embedVar = tools.embed("Please enter a valid role ID", "If you need help, please type ``a!help``.")
+		embedVar = tools.embed("Please enter a valid role ID", "Please enter a valid role id, and do not use mentions.")
 		await ctx.send(embed=embedVar) 
 
 	if tools.check(ctx.guild.id) == False:
-		embedVar = tools.embed("You must set a channel before setting an alarm", "If you need help, please type ``a!help``.")
+		embedVar = tools.embed("You must set a channel before setting an alarm", "Please type ``a!setchannel [channel id]`` to set a channel for the bot to ping in.")
 		await ctx.send(embed=embedVar) 
 		return False
 
@@ -139,6 +140,7 @@ async def requirements(self, ctx, args):
 
 	return True
 
+
 for tz in timeZones:
 	tz = timezone(timeZones[tz])
 	date = datetime.now(tz)
@@ -163,3 +165,4 @@ class events(commands.Cog):
 
 def setup(client):
   client.add_cog(events(client))
+

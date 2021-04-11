@@ -21,7 +21,7 @@ class events(commands.Cog):
 
 	@commands.command()
 	async def credits(self, ctx, *args):
-		embedVar = tools.embed("Credits", "Bot made by ``ChillPanda#5842`` and ``Pump3d#3682``.")
+		embedVar = tools.embed("Credits", "Bot made by ``ChillPanda#5842`` and ``Pump3d#3682``. Special thanks to ``kayule#0951`` for making the profile picture.")
 		await ctx.send(embed=embedVar)
 
 #["EST", "PST", "MST", "GMT", "HST", "HST", "UTC"]
