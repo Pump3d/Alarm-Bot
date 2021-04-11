@@ -52,8 +52,14 @@ async def requirements(self, ctx, args):
 			continue #im gonna print to see whats stopping it
 
 		print(args[0], args[1], args[2], args[3])
-		if argum.isdigit() and not ":" in argum:
+		if args[0] and not ":" in argum:
 			print("Time doesnt have colon")
+			embedVar = tools.embed("Please enter valid arguements", "If you need help, please type ``a!help``.")
+			await ctx.send(embed=embedVar)
+			return False 
+
+		if args[0] and len(argum.split(":")[1]) < 2:
+			print("Minutes is too short")
 			embedVar = tools.embed("Please enter valid arguements", "If you need help, please type ``a!help``.")
 			await ctx.send(embed=embedVar)
 			return False 
