@@ -8,6 +8,7 @@ from pytz import timezone
 import tools
 import time
 
+
 timeZones = {
 	"EST": "US/EASTERN",
 	"PST": "US/PACIFIC",
@@ -35,9 +36,6 @@ async def cooldown(guild):
 
 		await asyncio.sleep((60 - datetime.utcnow().second) - (t1 - t0)) 
 
-
-
-
 async def requirements(self, ctx, args):
 	if ctx.author.id == "771153822994530354" or ctx.author.id == "696790718743838793":
 		print("hi")
@@ -46,7 +44,7 @@ async def requirements(self, ctx, args):
 	if ctx.author.bot:
 		return False
 	
-	if len(args) < 4:
+	if len(args) < 5:
 		print("Too little arguements")
 		embedVar = tools.embed("Please enter a valid amount of arguments", "If you need help, please type ``a!help``.")
 		await ctx.send(embed=embedVar)
@@ -84,10 +82,18 @@ async def requirements(self, ctx, args):
 		await ctx.send(embed=embedVar) 
 		return False 
 
+
+	if not discord.utils.get(ctx.message.guild.roles, id=int(args[3])):
+		print("Invalid role") 
+		embedVar = tools.embed("Please enter a valid role ID", "If you need help, please type ``a!help``.")
+		await ctx.send(embed=embedVar) 
+		return False 
+
+
 	almName = " ".join(args)
 	name = None
 
-	for x in range(3, len(args)):
+	for x in range(4, len(args)):
 		if name == None:
 			name = args[x]
 			continue
@@ -97,12 +103,13 @@ async def requirements(self, ctx, args):
 	print(name)
 
 	if tools.check(ctx.guild.id) == False:
-		db[str(ctx.guild.id)] = {almName: {"time": args[0], "apm": args[1], "timezone": args[2],"name": name}}
+		db[str(ctx.guild.id)] = {}
+		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": args[3], "name": name}
 		
 		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
 
 	else:
-		db[str(ctx.guild.id)] = {almName: {"time": args[0], "apm": args[1], "timezone": args[2],"name": name}}
+		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": args[3], "name": name}
 	
 		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
 
