@@ -26,6 +26,9 @@ async def cooldown(guild):
 		t0 = time.time()
 
 		for date in sorted(db[guild].items()):
+			if date[0] == "channel":
+				continue
+
 			date = date[1]
 			if datetime.now(timezone(timeZones[date["timezone"]])).strftime("%-I:%M%p") == date["time"] + date["apm"]: 
 				print("e") 
@@ -87,8 +90,11 @@ async def requirements(self, ctx, args):
 		print("Invalid role") 
 		embedVar = tools.embed("Please enter a valid role ID", "If you need help, please type ``a!help``.")
 		await ctx.send(embed=embedVar) 
-		return False 
 
+	if tools.check(ctx.guild.id) == True and not "channel" in db[str(ctx.guild.id)]:
+		print("Channel not set") 
+		embedVar = tools.embed("You must set a channel before setting an alarm", "If you need help, please type ``a!help``.")
+		await ctx.send(embed=embedVar) 
 
 	almName = " ".join(args)
 	name = None
@@ -102,14 +108,16 @@ async def requirements(self, ctx, args):
 
 	print(name)
 
+
+
 	if tools.check(ctx.guild.id) == False:
 		db[str(ctx.guild.id)] = {}
-		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": args[3], "name": name}
+		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name}
 		
 		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
 
 	else:
-		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": args[3], "name": name}
+		db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name}
 	
 		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
 
