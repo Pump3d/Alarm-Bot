@@ -84,19 +84,27 @@ async def requirements(self, ctx, args):
 		await ctx.send(embed=embedVar) 
 		return False 
 
-	name = " ".join(args)
-	
+	almName = " ".join(args)
+	name = None
+
+	for x in range(3, len(args)):
+		if name == None:
+			name = args[x]
+			continue
+
+		name = name + " " + args[x]
+
+	print(name)
+
 	if tools.check(ctx.guild.id) == False:
-		db[str(ctx.guild.id)] = {name: {"time": args[0], "apm": args[1], "timezone": args[2],"name": args[3]}}
+		db[str(ctx.guild.id)] = {almName: {"time": args[0], "apm": args[1], "timezone": args[2],"name": name}}
 		
 		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
 
 	else:
-		db[str(ctx.guild.id)] = {name: {"time": args[0], "apm": args[1], "timezone": args[2],"name": args[3]}}
+		db[str(ctx.guild.id)] = {almName: {"time": args[0], "apm": args[1], "timezone": args[2],"name": name}}
 	
 		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
-				
-		print(args[0], args[1], args[2], args[3])
 
 	return True
 
