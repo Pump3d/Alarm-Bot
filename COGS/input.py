@@ -2,10 +2,11 @@ from main import *
 import discord
 from discord.ext import commands
 from replit import db
-from datetime import datetime
+from datetime import datetime, timedelta
 import asyncio
 from pytz import timezone
 import tools
+import time
 
 timeZones = {
 "EST": "US/EASTERN",
@@ -19,7 +20,25 @@ timeZones = {
 "Troll": "Antarctica/Troll"
 }
 
-async def requirements(ctx, args):
+async def cooldown(guild):
+	while True:
+		t0 = time.time()
+
+		for date in sorted(db[guild].items()):
+			date = date[1]
+			if datetime.now(timezone(timeZones[date["timezone"]])).strftime("%-I:%M%p") == date["time"] + date["apm"]: 
+				print("e") 
+			else:
+				print("Not time yet") 
+
+		t1 = time.time()
+
+		await asyncio.sleep((60 - datetime.utcnow().second) - (t1 - t0)) 
+
+
+
+
+async def requirements(self, ctx, args):
 	if ctx.author == client.user:
 		pass
 
@@ -54,34 +73,32 @@ async def requirements(ctx, args):
 			return False
 
 		if argum == args[1] and argum != "AM" and argum != "PM": 
-			print("Not AM or PM") # it hmm i see lol same dumb mistake i made last time
+			print("Not AM or PM") 
 			embedVar = tools.embed("Please enter valid arguements", "If you need help, please type ``a!help``.")
 			await ctx.send(embed=embedVar) 
-			return False #add Added AM/PM or something for the comment
+			return False 
 
 	name = " ".join(args)
 	
 	if tools.check(ctx.guild.id) == False:
 		db[str(ctx.guild.id)] = {name: {"time": args[0], "apm": args[1], "timezone": args[2],"name": args[3]}}
-		#self.client.loop.create_task(cooldown(str(ctx.guild.id))) wait we already 
+		
+		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
+	
 	else:
 		db[str(ctx.guild.id)] = {name: {"time": args[0], "apm": args[1], "timezone": args[2],"name": args[3]}}
-		
-	for tz in timeZones:
-		tz = timezone(timeZones[tz])
-		date = datetime.now(tz)
-		date = date.strftime("%-I:%M %p")
-		print(date)
-		
+	
+		self.client.loop.create_task(cooldown(str(ctx.guild.id)))
+				
 		print(args[0], args[1], args[2], args[3])
 
 	return True
 
-async def cooldown(guild):
-	while True:
-		for date in sorted(db[guild].items()):
-			if datetime.now().strftime("%H:%M"): 
-				await asyncio.sleep(60)
+for tz in timeZones:
+	tz = timezone(timeZones[tz])
+	date = datetime.now(tz)
+	date = date.strftime("%-I:%M %p")
+	print(date)
 
 for tz in timeZones:
 	tz = timezone(timeZones[tz])
@@ -96,7 +113,7 @@ class events(commands.Cog):
 	
 	@commands.command()
 	async def settime(self, ctx, *args):
-		if await requirements(ctx, args) == False:
+		if await requirements(self, ctx, args) == False:
 			return
 
 		embedVar = tools.embed("Time successfully set!", "Your time has successfully been set.")	
