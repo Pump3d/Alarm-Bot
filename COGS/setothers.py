@@ -17,7 +17,7 @@ class events(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 
-	@commands.command()
+	@commands.command(aliases=["setchnl, sc"])
 	async def setchannel(self, ctx, *args): 
 			if not ctx.message.author.guild_permissions.administrator:
 				embedVar = tools.embed("You must be an admin!", "You must have the administrator role to use this command.")
@@ -51,11 +51,6 @@ class events(commands.Cog):
 				
 				embedVar = tools.embed("Invalid channel ID", "If you need help, please type ``a!help``.")
 				await ctx.send(embed=embedVar)
-
-	@commands.command()
-	async def remove(self, ctx, args):
-		
-		pass
 
 
 def setup(client):

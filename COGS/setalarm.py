@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 import asyncio
 from pytz import timezone
 import tools
-import time
 
 tasking = []
 
@@ -26,7 +25,6 @@ async def cooldown(self, guild):
 	tasking.append(guild)
 	await self.client.wait_until_ready()
 	while True:
-		t0 = time.time()
 
 		if not tools.check(guild):
 			break
@@ -35,18 +33,21 @@ async def cooldown(self, guild):
 			if date[0] == "channel":
 				continue
 
-
 			date = date[1]
-			if datetime.now(timezone(timeZones[date["timezone"]])).strftime("%-I:%M%p") == date["time"] + date["apm"]: 
-				embedVar = tools.embed("Alarm", "<@&" + str(date["role"]) + "> " + date["name"])
-				channel = self.client.get_channel(db[guild]["channel"])
-				await channel.send(embed=embedVar)
-				mention = await channel.send("<@&" + str(date["role"]) + ">")
-				await mention.delete()
 
-		t1 = time.time()
+			tz = timezone(timeZones[date["timezone"]])
+			day = datetime.now(tz)
+			day = day.strftime("%A")
 
-		await asyncio.sleep((60 - datetime.utcnow().second) - (t1 - t0)) 
+			if not day in date["disdays"]:
+				if datetime.now(timezone(timeZones[date["timezone"]])).strftime("%-I:%M%p") == date["time"] + date["apm"]: 
+					embedVar = tools.embed("Alarm", "<@&" + str(date["role"]) + "> " + date["name"])
+					channel = self.client.get_channel(db[guild]["channel"])
+					await channel.send(embed=embedVar)
+					mention = await channel.send("<@&" + str(date["role"]) + ">")
+					await mention.delete()
+
+		await asyncio.sleep((60 - datetime.utcnow().second) + 3) 
 
 
 def activate(self):
@@ -105,6 +106,12 @@ async def requirements(self, ctx, args):
 		await ctx.send(embed=embedVar) 
 		return False 
 
+	try:
+		int(args[3])
+	except:
+		embedVar = tools.embed("Please enter a valid role ID", "Please enter a valid role id, and do not use mentions.")
+		await ctx.send(embed=embedVar) 
+		return False
 
 	if not discord.utils.get(ctx.message.guild.roles, id=int(args[3])):
 		print("Invalid role") 
@@ -116,7 +123,7 @@ async def requirements(self, ctx, args):
 		await ctx.send(embed=embedVar) 
 		return False
 
-	almName = " ".join(args)
+
 	name = None
 
 	for x in range(4, len(args)):
@@ -136,12 +143,12 @@ async def requirements(self, ctx, args):
 			await ctx.send(embed=embedVar) 
 			return False
 
-	db[str(ctx.guild.id)][almName] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name}
+	db[str(ctx.guild.id)][str(ctx.message.id)] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name, "disdays": []}
 	
 	if not str(ctx.guild.id) in tasking:	
 		self.client.loop.create_task(cooldown(self, str(ctx.guild.id)))
 
-	return True
+	return str(ctx.message.id)
 
 
 for tz in timeZones:
@@ -157,12 +164,14 @@ class events(commands.Cog):
 		activate(self)
 
 	
-	@commands.command()
+	@commands.command(aliases=["setalarm", "sa"])
 	async def settime(self, ctx, *args):
-		if await requirements(self, ctx, args) == False:
+		req = await requirements(self, ctx, args)
+		if not req:
 			return
 
-		embedVar = tools.embed("Time successfully set!", "Your time has successfully been set.")	
+		embedVar = tools.embed("Time successfully set!", "Your time has successfully been set.")
+		embedVar.set_footer(text="Alarm ID: {}".format(req))
 		await ctx.send(embed=embedVar)
 
 

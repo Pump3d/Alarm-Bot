@@ -25,32 +25,28 @@ async def requirements(self, ctx, args):
 		if date[0] == "channel":
 			continue
 
-		date2 = date[1]
-		
-		if args == date2["name"]:
+		print(date[0])
+		if args == date[0]:
 			del db[str(ctx.guild.id)][date[0]]
-			embedVar = tools.embed("Successfully deleted alarm", "Alarm ``" + date2["name"] + "`` has been successfully deleted.")
+			embedVar = tools.embed("Successfully deleted alarm", "Alarm ``" + date[1]["name"] + "`` has been successfully deleted.")
 			await ctx.send(embed=embedVar)
-			return
+			return False
 
 
 	embedVar = tools.embed("Could not find alarm", "Alarm ``" + args + "`` does not exist.")
 	await ctx.send(embed=embedVar)
-		
-
-	
-	
+	return False
+			
 
 class events(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 
-	@commands.command()
+	@commands.command(aliases=["deletealrm", "delalarm", "da", "removealarm", "remove", "delete"])
 	async def deletealarm(self, ctx, *args):
 		if await requirements(self, ctx, args) == False:
 			return
 	
-
 
 def setup(client):
   client.add_cog(events(client))
