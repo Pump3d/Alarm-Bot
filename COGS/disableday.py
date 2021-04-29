@@ -14,20 +14,24 @@ async def requirements(self, ctx, *args):
 	except:
 		embedVar = tools.embed("You have not set any alarms!", "Please type ``a!help`` to view command usage and how to set an alarm")
 		await ctx.send(embed=embedVar)
-		return
-
+		return 
+		
 	if not ctx.message.author.guild_permissions.administrator:
 		embedVar = tools.embed("You must be an admin!", "You must have the administrator role to use this command.")
 		await ctx.send(embed=embedVar)
 		return
 	
+	if len(args) < 2:
+		embedVar = tools.embed("Please put a valid amount of arguements", "You must have a valid amount of arguments to disable a day.")
+		await ctx.send(embed=embedVar)
+		return
 	
 	if tools.check(ctx.guild.id) == False:
 		embedVar = tools.embed("You must set a channel before setting an alarm", "Please type ``a!setchannel [channel id]`` to set a channel for the bot to ping in.")
 		await ctx.send(embed=embedVar) 
 		return False
 	
-	if not args[1].lower().title() in disdays:
+	if not args[1].title() in disdays:
 		embedVar = tools.embed("Please enter a valid day.", "Please enter a valid day of the week.")
 		print("Not a valid day.")
 		await ctx.send(embed=embedVar)
@@ -49,7 +53,6 @@ async def requirements(self, ctx, *args):
 	return True
 		
 
-
 class events(commands.Cog):
 	def __init__(self, client):
 		self.client = client
@@ -69,4 +72,4 @@ class events(commands.Cog):
 
 
 def setup(client): 
-	client.add_cog(events(client))
+	client.add_cog(events(client)) 
