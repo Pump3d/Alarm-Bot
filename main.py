@@ -14,13 +14,13 @@ client = commands.Bot(help_command = None, command_prefix = 'a!')
 async def on_ready():
 	keep_alive.keep_alive()
 	print("bot online")
+	game = discord.Game("a!help")
+	await client.change_presence(status=discord.Status.online, activity=game)
 
 
 for file in os.listdir('./COGS'):
 	if file.endswith(".py"):
 		client.load_extension(f'COGS.{file[:-3]}')
 		print(file[:-3] + " has loaded")
-
-#client = discord.Client(activity=discord.Game(name='Alarm'))
 
 client.run(os.getenv('TOKEN'))

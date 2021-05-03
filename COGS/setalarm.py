@@ -44,6 +44,8 @@ async def cooldown(self, guild):
 				db[guild][date[0]]["fired"] = False
 				print("New day!")
 
+			
+
 			tz = timezone(timeZones[date[1]["timezone"]])
 			day = datetime.now(tz)
 			day = day.strftime("%A")
