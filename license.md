@@ -17,4 +17,4 @@
 		This license is acceptable for Free Cultural Works.
 		The licensor cannot revoke these freedoms as long as you follow the license terms.
 		
-		This work is made by ChillPanda100 and Pump3d
+		This work was made by ChillPanda100 and Pump3d
