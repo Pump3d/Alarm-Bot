@@ -12,4 +12,4 @@ def check(name):
 		db[str(name)]
 		return True
 	except:
-		return False  
+		return False

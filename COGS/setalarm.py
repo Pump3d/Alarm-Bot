@@ -21,52 +21,26 @@ timeZones = {
 	"Troll": "Antarctica/Troll"
 }
 
-
-
 async def cooldown(self, guild):
 	tasking.append(guild)
 	await self.client.wait_until_ready()
-	
-	
 	while True:
 
 		if not tools.check(guild):
 			break
 
-
 		for date in sorted(db[guild].items()):
 			if date[0] == "channel":
 				continue
 
-			datetimeObj = datetime.now(timezone(timeZones[date[1]["timezone"]]))
-			if datetimeObj.strftime("%d") != date[1]["day"]:
-				db[guild][date[0]]["day"] = datetimeObj.strftime("%d")
-				db[guild][date[0]]["fired"] = False
-				print("New day!")
+			date = date[1]
 
-			
-
-			tz = timezone(timeZones[date[1]["timezone"]])
+			tz = timezone(timeZones[date["timezone"]])
 			day = datetime.now(tz)
 			day = day.strftime("%A")
 
-			if not day in date[1]["disdays"]:
-				if db[guild][date[0]]["fired"] == True:
-					continue
-
-				db[guild][date[0]]["fired"] = True
-
-				date = date[1]
-
-				if len(date["time"].split(":")[0]) > 1:
-					split = 3					
-				else:
-					split = 2
-				
-				
-				datetimeObj = datetime.now(timezone(timeZones[date["timezone"]]))
-
-				if datetimeObj.strftime("%-I:%M%p") == date["time"] + date["apm"] or int(datetimeObj.strftime("%M")) - int(date["time"][split:]) == 1 and datetimeObj.strftime("%p") == date["apm"]: 
+			if not day in date["disdays"]:
+				if datetime.now(timezone(timeZones[date["timezone"]])).strftime("%-I:%M%p") == date["time"] + date["apm"]: 
 					embedVar = tools.embed("Alarm", "<@&" + str(date["role"]) + "> " + date["name"])
 					channel = self.client.get_channel(db[guild]["channel"])
 					await channel.send(embed=embedVar)
@@ -80,6 +54,10 @@ def activate(self):
 	for guild in db.keys():
 		self.client.loop.create_task(cooldown(self, guild))
 
+		#self.loops.append(guild)
+
+		#print(self.loops[guild])
+ 
 
 async def requirements(self, ctx, args):
 	if not ctx.message.author.guild_permissions.administrator:
@@ -159,14 +137,18 @@ async def requirements(self, ctx, args):
 
 		name = name + " " + args[x]
 
+	for date in sorted(db[str(ctx.guild.id)].items()):
+		if date[0] == "channel":
+			continue
 
+		#date = date[1]
+		#if date["name"] == name:
+			#embedVar = tools.embed("There is already an alarm with the same name!", "Please use ``a!deletealarm`` to delete the previous alarm before setting a new one.")
+			#await ctx.send(embed=embedVar) 
+			#return False
 
-	datetimeObj = datetime.now(timezone(timeZones[args[2]]))
-
-	db[str(ctx.guild.id)][str(ctx.message.id)] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name, "disdays": [], "fired": False, "day": datetimeObj.strftime("%d")}
+	db[str(ctx.guild.id)][str(ctx.message.id)] = {"time": args[0], "apm": args[1], "timezone": args[2], "role": int(args[3]), "name": name, "disdays": []}
 	
-	print(db[str(ctx.guild.id)][str(ctx.message.id)]["day"])
-
 	if not str(ctx.guild.id) in tasking:	
 		self.client.loop.create_task(cooldown(self, str(ctx.guild.id)))
 
@@ -179,11 +161,11 @@ for tz in timeZones:
 	date = date.strftime("%-I:%M %p")
 	print(date)
 
-
 class events(commands.Cog):
 
 	def __init__(self, client):
 		self.client = client
+		self.loops = []
 		activate(self)
 
 	
@@ -200,4 +182,3 @@ class events(commands.Cog):
 
 def setup(client):
   client.add_cog(events(client))
-
